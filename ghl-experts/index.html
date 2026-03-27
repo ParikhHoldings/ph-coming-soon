@@ -438,21 +438,11 @@
       btn.disabled = true;
 
       try {
-        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+        
+        const res = await fetch('/api/subscribe', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
-          body: JSON.stringify({
-            email: email,
-            reactivate_existing: true,
-            send_welcome_email: true,
-            tags: ['GHL Expert Job Board', 'waitlist'],
-            custom_fields: [
-              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'GHL Expert Job Board' },
-            ],
-            utm_source: 'ghl-experts',
-            utm_medium: 'waitlist',
-            utm_campaign: 'coming-soon'
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, product: 'GHL Expert Job Board' })
         });
         
         if (res.ok) {
