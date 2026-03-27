@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM SEO Audit — Is your business invisible to AI search?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #4F46E5;
+    --accent-light: #818CF8;
+    --accent-bright: #A5B4FC;
+    --accent-dim: rgba(79,70,229,0.1);
+    --bg: #03020F;
+    --surface: #080620;
+    --text: #F0EFFF;
+    --muted: #6060A0;
+    --border: rgba(79,70,229,0.2);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Neural network dots */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 15% 20%, rgba(129,140,248,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 50%, rgba(129,140,248,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 60% 15%, rgba(129,140,248,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 35%, rgba(129,140,248,0.2) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 90% 60%, rgba(129,140,248,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 80%, rgba(129,140,248,0.25) 0%, transparent 100%),
+      radial-gradient(2px 2px at 25% 70%, rgba(129,140,248,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse at center bottom, rgba(79,70,229,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 44px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: load 0.6s ease both;
+  }
+
+  .logo {
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-ai {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ai-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    animation: dotPulse 1.5s ease-in-out infinite;
+  }
+
+  .ai-dot:nth-child(2) { animation-delay: 0.2s; }
+  .ai-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .status-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-bright);
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  main {
+    padding: 80px 0;
+  }
+
+  .headline {
+    margin-bottom: 60px;
+  }
+
+  .question-mark {
+    font-size: clamp(5rem, 12vw, 10rem);
+    font-weight: 900;
+    color: rgba(79,70,229,0.12);
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+    margin-bottom: -20px;
+    animation: load 0.6s ease both;
+    user-select: none;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    margin-bottom: 24px;
+    animation: load 0.6s ease 0.1s both;
+    position: relative;
+  }
+
+  h1 .invisible {
+    color: var(--accent-bright);
+  }
+
+  .description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 540px;
+    font-weight: 300;
+    animation: load 0.6s ease 0.15s both;
+  }
+
+  /* AI platforms visibility score */
+  .visibility-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 52px;
+    animation: load 0.6s ease 0.2s both;
+  }
+
+  .ai-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 16px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .ai-card:hover {
+    border-color: var(--accent-light);
+    transform: translateY(-2px);
+  }
+
+  .ai-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--muted);
+  }
+
+  .ai-score-ring {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 8px;
+    position: relative;
+  }
+
+  .ring-bg {
+    fill: none;
+    stroke: rgba(79,70,229,0.15);
+    stroke-width: 4;
+  }
+
+  .ring-fill {
+    fill: none;
+    stroke: var(--accent-light);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform-origin: center;
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 1s ease;
+  }
+
+  .ring-fill.low { stroke: #F87171; }
+  .ring-fill.med { stroke: #FBBF24; }
+  .ring-fill.high { stroke: #34D399; }
+
+  .ai-score-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+
+  .ai-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  /* Features */
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 52px;
+    animation: load 0.6s ease 0.25s both;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .feature:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .feature-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  /* Form */
+  .form-section {
+    animation: load 0.6s ease 0.3s both;
+  }
+
+  .form-heading {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .form-sub {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    max-width: 520px;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 15px 18px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 22px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover { background: #4338CA; }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .form-note {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: load 0.6s ease 0.5s both;
+  }
+
+  @keyframes load {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .visibility-grid { grid-template-columns: 1fr 1fr; }
+    .form-row { flex-direction: column; }
+    button[type="submit"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-ai">
+        <div class="ai-dot"></div>
+        <div class="ai-dot"></div>
+        <div class="ai-dot"></div>
+      </div>
+      LLM SEO Audit
+    </div>
+    <div class="status-tag">Coming Soon</div>
+  </header>
+
+  <main>
+    <div class="headline">
+      <div class="question-mark">?</div>
+      <h1>Is your business <span class="invisible">invisible</span><br>to AI search?</h1>
+      <p class="description">
+        AI visibility audit for businesses. We analyze how your brand appears in ChatGPT, Claude, Gemini, and Perplexity — and give you a roadmap to rank in the AI era.
+      </p>
+    </div>
+
+    <div class="visibility-grid">
+      <div class="ai-card">
+        <div class="ai-name">ChatGPT</div>
+        <div class="ai-score-ring">
+          <svg viewBox="0 0 56 56" width="56" height="56">
+            <circle class="ring-bg" cx="28" cy="28" r="22"/>
+            <circle class="ring-fill med" cx="28" cy="28" r="22" 
+              stroke-dasharray="138.2" stroke-dashoffset="72"/>
+          </svg>
+          <div class="ai-score-text">48</div>
+        </div>
+        <div class="ai-label">Visibility</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-name">Claude</div>
+        <div class="ai-score-ring">
+          <svg viewBox="0 0 56 56" width="56" height="56">
+            <circle class="ring-bg" cx="28" cy="28" r="22"/>
+            <circle class="ring-fill low" cx="28" cy="28" r="22" 
+              stroke-dasharray="138.2" stroke-dashoffset="113"/>
+          </svg>
+          <div class="ai-score-text">18</div>
+        </div>
+        <div class="ai-label">Visibility</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-name">Gemini</div>
+        <div class="ai-score-ring">
+          <svg viewBox="0 0 56 56" width="56" height="56">
+            <circle class="ring-bg" cx="28" cy="28" r="22"/>
+            <circle class="ring-fill med" cx="28" cy="28" r="22" 
+              stroke-dasharray="138.2" stroke-dashoffset="83"/>
+          </svg>
+          <div class="ai-score-text">40</div>
+        </div>
+        <div class="ai-label">Visibility</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-name">Perplexity</div>
+        <div class="ai-score-ring">
+          <svg viewBox="0 0 56 56" width="56" height="56">
+            <circle class="ring-bg" cx="28" cy="28" r="22"/>
+            <circle class="ring-fill low" cx="28" cy="28" r="22" 
+              stroke-dasharray="138.2" stroke-dashoffset="124"/>
+          </svg>
+          <div class="ai-score-text">10</div>
+        </div>
+        <div class="ai-label">Visibility</div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        AI search visibility scoring across all major LLMs
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        Competitor gap analysis — see who's winning and why
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🗺</div>
+        Optimization roadmap — concrete steps to rank in the AI era
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-heading">Get your AI visibility score</div>
+      <p class="form-sub">Join the waitlist. First audits ship to early access members.</p>
+      <form action="#">
+        <input type="hidden" name="product" value="llm-seo-audit">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="you@yourbusiness.com" required>
+          <button type="submit">Get early access</button>
+        </div>
+      </form>
+      <p class="form-note">No spam. Unsubscribe anytime.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['LLM SEO Audit', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'LLM SEO Audit' },
+            ],
+            utm_source: 'llm-seo-audit',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

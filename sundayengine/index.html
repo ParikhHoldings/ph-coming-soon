@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SundayEngine — Turn Sunday's sermon into a week of discipleship content.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #6D28D9;
+    --accent-light: #A78BFA;
+    --accent-gold: #F59E0B;
+    --accent-dim: rgba(109,40,217,0.1);
+    --bg: #06020F;
+    --surface: #0E0520;
+    --text: #F5F0FF;
+    --muted: #7A6A9A;
+    --border: rgba(109,40,217,0.2);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Light rays */
+  .rays {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 600px;
+    background: conic-gradient(
+      from 260deg at 50% 0%,
+      transparent 0deg,
+      rgba(109,40,217,0.06) 10deg,
+      transparent 20deg,
+      rgba(245,158,11,0.03) 30deg,
+      transparent 40deg,
+      rgba(109,40,217,0.04) 50deg,
+      transparent 60deg,
+      rgba(109,40,217,0.05) 70deg,
+      transparent 80deg
+    );
+    pointer-events: none;
+    z-index: 0;
+    animation: rayRotate 30s linear infinite;
+  }
+
+  @keyframes rayRotate {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(360deg); }
+  }
+
+  .glow-center {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(109,40,217,0.2) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 44px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: ascend 0.7s ease both;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-cross {
+    position: relative;
+    width: 22px;
+    height: 22px;
+  }
+
+  .logo-cross::before {
+    content: '✦';
+    color: var(--accent-gold);
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  main {
+    padding: 80px 0;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 22px;
+    animation: ascend 0.7s ease 0.1s both;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    margin-bottom: 24px;
+    animation: ascend 0.7s ease 0.15s both;
+  }
+
+  h1 .sermon {
+    color: var(--accent-light);
+  }
+
+  h1 .week {
+    color: var(--accent-gold);
+  }
+
+  .description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 540px;
+    font-weight: 300;
+    margin-bottom: 52px;
+    animation: ascend 0.7s ease 0.2s both;
+  }
+
+  /* Content output preview */
+  .output-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 52px;
+    animation: ascend 0.7s ease 0.25s both;
+  }
+
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .output-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 3px 0 0 3px;
+  }
+
+  .output-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .output-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+    padding-left: 12px;
+  }
+
+  .output-preview {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding-left: 12px;
+  }
+
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin-bottom: 52px;
+    animation: ascend 0.7s ease 0.3s both;
+  }
+
+  .features {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 52px;
+    flex-wrap: wrap;
+    animation: ascend 0.7s ease 0.3s both;
+  }
+
+  .feat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    transition: border-color 0.2s;
+  }
+
+  .feat-chip:hover { border-color: var(--accent); }
+
+  .form-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    animation: ascend 0.7s ease 0.35s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-section::after {
+    content: '✦';
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    font-size: 8rem;
+    color: rgba(109,40,217,0.04);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .form-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .form-sub {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover { background: #5B21B6; }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .form-note {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: ascend 0.7s ease 0.5s both;
+  }
+
+  @keyframes ascend {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .output-grid { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    button[type="submit"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="rays"></div>
+<div class="glow-center"></div>
+<div class="container">
+  <header>
+    <div class="logo">
+      <span style="color: var(--accent-gold); font-size: 1.3rem;">✦</span>
+      SundayEngine
+    </div>
+    <div class="tag">Coming Soon</div>
+  </header>
+
+  <main>
+    <p class="eyebrow">✦ For churches & ministry teams</p>
+    <h1>Turn <span class="sermon">Sunday's sermon</span><br>into a week of<br><span class="week">discipleship content.</span></h1>
+
+    <p class="description">
+      AI content platform for churches. Input your sermon, get bulletin, social posts, discussion questions, and devotionals — in your church's voice, every week.
+    </p>
+
+    <div class="output-grid">
+      <div class="output-card">
+        <div class="output-type">📋 Bulletin Insert</div>
+        <div class="output-preview">"This week we explored John 15:5 — remaining in the vine. Take-home discussion questions inside..."</div>
+      </div>
+      <div class="output-card">
+        <div class="output-card" style="border: none; padding: 0; transform: none;">
+          <div class="output-type">📱 Social Post</div>
+          <div class="output-preview">"You weren't designed to do life alone. This Sunday's message was a reminder of what it means to abide. ✝️"</div>
+        </div>
+      </div>
+      <div class="output-card">
+        <div class="output-type">💬 Small Group Qs</div>
+        <div class="output-preview">1. Where are you currently feeling disconnected? 2. What does "remaining" look like practically for you?</div>
+      </div>
+      <div class="output-card">
+        <div class="output-type">📖 Daily Devotional</div>
+        <div class="output-preview">"Monday: Read John 15:1-8. Reflect on one area where you need to reconnect with the source of life..."</div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feat-chip">🧠 Denomination-aware AI</div>
+      <div class="feat-chip">📦 Full weekly content package</div>
+      <div class="feat-chip">⏱ Under 10 minutes/week</div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-title">Get early access for your church</div>
+      <p class="form-sub">For pastors, communications directors, and ministry teams who want more time for people, not production.</p>
+      <form action="#">
+        <input type="hidden" name="product" value="sundayengine">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="pastor@yourchurch.com" required>
+          <button type="submit">Notify me</button>
+        </div>
+      </form>
+      <p class="form-note">Built with love for the local church. No spam, ever.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['SundayEngine', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'SundayEngine' },
+            ],
+            utm_source: 'sundayengine',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

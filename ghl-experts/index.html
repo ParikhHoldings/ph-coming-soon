@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHL Expert Job Board — Find certified GoHighLevel experts.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #7C3AED;
+    --accent-light: #A78BFA;
+    --accent-dim: rgba(124,58,237,0.1);
+    --bg: #07030F;
+    --surface: #100820;
+    --card: #130A22;
+    --text: #F5F0FF;
+    --muted: #8B7AAA;
+    --border: rgba(124,58,237,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Diagonal stripe pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(124,58,237,0.02) 40px,
+      rgba(124,58,237,0.02) 41px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-top {
+    position: fixed;
+    top: -300px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(20px); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 40px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-badge {
+    background: var(--accent);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+
+  main {
+    padding: 80px 0 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .left-col {}
+
+  .right-col {
+    padding-top: 20px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s ease 0.15s both;
+  }
+
+  h1 .ghl {
+    color: var(--accent-light);
+  }
+
+  .description {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: fadeUp 0.6s ease 0.25s both;
+  }
+
+  .feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .feature:hover {
+    border-color: var(--accent);
+  }
+
+  .feature-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .feature-info {}
+
+  .feature-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .feature-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  /* Right column form card */
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    animation: fadeUp 0.6s ease 0.2s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent));
+  }
+
+  .form-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .form-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .role-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .role-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .role-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent-light);
+  }
+
+  input[type="email"] {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: -0.01em;
+  }
+
+  button[type="submit"]:hover { background: #6D28D9; }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .trust-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: center;
+  }
+
+  .trust-dot {
+    width: 6px;
+    height: 6px;
+    background: #4ADE80;
+    border-radius: 50%;
+    animation: pulse2 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse2 {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .trust-text {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: fadeUp 0.6s ease 0.5s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 700px) {
+    main { grid-template-columns: 1fr; gap: 40px; }
+    .right-col { padding-top: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="glow-top"></div>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-badge">GHL</div>
+      Expert Job Board
+    </div>
+  </header>
+
+  <main>
+    <div class="left-col">
+      <div class="tag">Coming Soon</div>
+      <h1>Find certified <span class="ghl">GoHighLevel</span> experts.</h1>
+
+      <p class="description">
+        The only job board built exclusively for GoHighLevel experts and the businesses that need them. Post a project, get matched with vetted GHL pros.
+      </p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <div class="feature-info">
+            <div class="feature-name">Vetted GHL experts only</div>
+            <div class="feature-desc">Every expert verified for real GHL experience</div>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📋</div>
+          <div class="feature-info">
+            <div class="feature-name">Project-based hiring</div>
+            <div class="feature-desc">Post a scope, get quotes, hire in days</div>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💰</div>
+          <div class="feature-info">
+            <div class="feature-name">Transparent pricing</div>
+            <div class="feature-desc">Know what you're paying before you commit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="form-card">
+        <div class="form-title">Get early access</div>
+        <p class="form-subtitle">Whether you're hiring or looking for work — join the waitlist and go first.</p>
+
+        <div class="role-toggle">
+          <button type="button" class="role-btn active">I'm hiring</button>
+          <button type="button" class="role-btn">I'm an expert</button>
+        </div>
+
+        <form action="#">
+          <input type="hidden" name="product" value="ghl-experts">
+          <div class="field-group">
+            <input type="email" name="email" placeholder="your@email.com" required>
+          </div>
+          <button type="submit">Notify me when it launches →</button>
+        </form>
+
+        <div class="trust-row">
+          <div class="trust-dot"></div>
+          <span class="trust-text">No spam · No credit card · Unsubscribe anytime</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  // Simple role toggle
+  document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['GHL Expert Job Board', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'GHL Expert Job Board' },
+            ],
+            utm_source: 'ghl-experts',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

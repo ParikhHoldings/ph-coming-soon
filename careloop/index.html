@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareLoop — Care for aging parents, together.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #DB2777;
+    --accent-light: #F472B6;
+    --accent-soft: #FDE8F2;
+    --accent-dim: rgba(219,39,119,0.08);
+    --bg: #0D0108;
+    --surface: #1A0310;
+    --text: #FFF0F6;
+    --muted: #9A5070;
+    --border: rgba(219,39,119,0.15);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Soft warm glow */
+  .glow-bg {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 100vh;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(219,39,119,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(244,114,182,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating circles */
+  .circle-1 {
+    position: fixed;
+    top: 10%;
+    right: 5%;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(219,39,119,0.08);
+    pointer-events: none;
+    z-index: 0;
+    animation: orbit 20s linear infinite;
+  }
+
+  .circle-2 {
+    position: fixed;
+    top: 10%;
+    right: 5%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(219,39,119,0.05);
+    pointer-events: none;
+    z-index: 0;
+    margin: 50px;
+    animation: orbit 15s linear infinite reverse;
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 44px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: warmIn 0.7s ease both;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-heart {
+    font-size: 1.2rem;
+    animation: heartbeat 2s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.2); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.15); }
+    56% { transform: scale(1); }
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  main {
+    padding: 80px 0;
+  }
+
+  .hero {
+    margin-bottom: 56px;
+    animation: warmIn 0.7s ease 0.1s both;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    margin-bottom: 22px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent-light);
+  }
+
+  .description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 520px;
+    font-weight: 300;
+  }
+
+  /* Care activity feed */
+  .care-feed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 48px;
+    animation: warmIn 0.7s ease 0.2s both;
+  }
+
+  .feed-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .feed-live {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: #4ADE80;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    background: #4ADE80;
+    border-radius: 50%;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .feed-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(219,39,119,0.06);
+    transition: background 0.15s;
+  }
+
+  .feed-entry:hover { background: rgba(219,39,119,0.03); }
+  .feed-entry:last-child { border-bottom: none; }
+
+  .feed-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .feed-content { flex: 1; }
+
+  .feed-author {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .feed-text {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .feed-time {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .feed-type {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .type-med { background: rgba(251,191,36,0.1); color: #FBBF24; }
+  .type-note { background: rgba(96,165,250,0.1); color: #60A5FA; }
+  .type-appt { background: rgba(52,211,153,0.1); color: #34D399; }
+
+  /* Features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 52px;
+    animation: warmIn 0.7s ease 0.3s both;
+  }
+
+  .feat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .feat-card:hover { border-color: var(--accent); }
+
+  .feat-icon { font-size: 1.4rem; margin-bottom: 10px; }
+  .feat-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
+  .feat-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  /* Form */
+  .form-section {
+    animation: warmIn 0.7s ease 0.35s both;
+  }
+
+  .form-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .form-sub {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover { background: #BE185D; }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .form-note {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: warmIn 0.7s ease 0.5s both;
+  }
+
+  @keyframes warmIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .features { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    button[type="submit"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="glow-bg"></div>
+<div class="circle-1"></div>
+<div class="circle-2"></div>
+
+<div class="container">
+  <header>
+    <div class="logo">
+      <span class="logo-heart">💗</span>
+      CareLoop
+    </div>
+    <div class="badge">Coming Soon</div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Care for aging parents,<br><em>together.</em></h1>
+      <p class="description">
+        AI-powered coordination hub for adult children managing aging parents. Shared care logs, medication tracking, and family updates — in one place, without the chaos.
+      </p>
+    </div>
+
+    <div class="care-feed">
+      <div class="feed-header">
+        <span>Family Care Log — Mom</span>
+        <div class="feed-live"><div class="live-dot"></div> Live</div>
+      </div>
+      <div class="feed-entry">
+        <div class="feed-avatar">👩</div>
+        <div class="feed-content">
+          <div class="feed-author">Sarah (Sister)</div>
+          <div class="feed-text">Visited today. Mom had a great appetite at lunch. Her knee seems better — walked without the cane.</div>
+          <div class="feed-time">Today 2:14 PM</div>
+        </div>
+        <div class="feed-type type-note">Note</div>
+      </div>
+      <div class="feed-entry">
+        <div class="feed-avatar">💊</div>
+        <div class="feed-content">
+          <div class="feed-author">CareLoop AI</div>
+          <div class="feed-text">Medication reminder: Mom's lisinopril prescription expires in 5 days. Dr. Chen's office number saved.</div>
+          <div class="feed-time">Today 10:00 AM</div>
+        </div>
+        <div class="feed-type type-med">Meds</div>
+      </div>
+      <div class="feed-entry">
+        <div class="feed-avatar">🗓</div>
+        <div class="feed-content">
+          <div class="feed-author">Michael (Brother)</div>
+          <div class="feed-text">Cardiology follow-up scheduled for April 3rd at 2pm. I can drive — who else wants to come?</div>
+          <div class="feed-time">Yesterday 4:38 PM</div>
+        </div>
+        <div class="feed-type type-appt">Appt</div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feat-card">
+        <div class="feat-icon">👨‍👩‍👧‍👦</div>
+        <div class="feat-title">Family care coordination</div>
+        <div class="feat-desc">Everyone sees the same picture. No more "did anyone call the doctor?"</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💊</div>
+        <div class="feat-title">Medication & appointment tracking</div>
+        <div class="feat-desc">Automated reminders so nothing falls through the cracks</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧠</div>
+        <div class="feat-title">AI care insights</div>
+        <div class="feat-desc">Patterns from care logs, with actionable suggestions</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-title">Join the waitlist</div>
+      <p class="form-sub">For adult children who want to care for their parents well — together, not alone.</p>
+      <form action="#">
+        <input type="hidden" name="product" value="careloop">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="your@email.com" required>
+          <button type="submit">Notify me when it launches</button>
+        </div>
+      </form>
+      <p class="form-note">Free to join. No spam. Built with love.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['CareLoop', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'CareLoop' },
+            ],
+            utm_source: 'careloop',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

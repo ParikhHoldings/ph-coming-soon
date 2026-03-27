@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HostStack — Manage your short-term rentals like a pro.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #0284C7;
+    --accent-light: #38BDF8;
+    --accent-dim: rgba(2,132,199,0.1);
+    --bg: #020810;
+    --surface: #061220;
+    --text: #F0F9FF;
+    --muted: #5080A0;
+    --border: rgba(2,132,199,0.18);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Sky gradient at top */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50vh;
+    background: linear-gradient(180deg, rgba(2,132,199,0.06) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Stars */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(56,189,248,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 8%, rgba(56,189,248,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 20%, rgba(56,189,248,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 12%, rgba(56,189,248,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 25%, rgba(56,189,248,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 20% 40%, rgba(56,189,248,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 35%, rgba(56,189,248,0.4) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 44px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: elevate 0.7s ease both;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
+
+  .logo .stack {
+    color: var(--accent-light);
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  main {
+    padding: 80px 0;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    margin-bottom: 22px;
+    animation: elevate 0.7s ease 0.1s both;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent-light);
+  }
+
+  .description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 520px;
+    font-weight: 300;
+    margin-bottom: 52px;
+    animation: elevate 0.7s ease 0.15s both;
+  }
+
+  /* Properties grid */
+  .properties-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+    animation: elevate 0.7s ease 0.2s both;
+  }
+
+  .property-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .property-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(2,132,199,0.12);
+  }
+
+  .property-img {
+    height: 80px;
+    background: linear-gradient(135deg, rgba(2,132,199,0.3), rgba(2,132,199,0.05));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+
+  .property-info {
+    padding: 12px;
+  }
+
+  .property-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .property-status {
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .property-status.booked { color: #4ADE80; }
+  .property-status.open { color: var(--accent-light); }
+
+  /* Features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 52px;
+    animation: elevate 0.7s ease 0.25s both;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .feature-card:hover { border-color: var(--accent); }
+
+  .feature-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .feature-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .feature-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Form */
+  .form-section {
+    animation: elevate 0.7s ease 0.3s both;
+  }
+
+  .form-label {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover { background: #0369A1; }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .form-note {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: elevate 0.7s ease 0.5s both;
+  }
+
+  @keyframes elevate {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .properties-grid { grid-template-columns: 1fr 1fr; }
+    .features { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    button[type="submit"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">Host<span class="stack">Stack</span></div>
+    <div class="tag">Coming Soon</div>
+  </header>
+
+  <main>
+    <h1>Manage your short-term<br>rentals <em>like a pro.</em></h1>
+
+    <p class="description">
+      Property management software for STR hosts with 1-20 properties. Unified inbox, automated guest messaging, and cleaning coordination — all in one place.
+    </p>
+
+    <div class="properties-grid">
+      <div class="property-card">
+        <div class="property-img">🏖</div>
+        <div class="property-info">
+          <div class="property-name">Beach House</div>
+          <div class="property-status booked">● Booked</div>
+        </div>
+      </div>
+      <div class="property-card">
+        <div class="property-img">🏙</div>
+        <div class="property-info">
+          <div class="property-name">Downtown Loft</div>
+          <div class="property-status booked">● Booked</div>
+        </div>
+      </div>
+      <div class="property-card">
+        <div class="property-img">🌲</div>
+        <div class="property-info">
+          <div class="property-name">Mountain Cabin</div>
+          <div class="property-status open">○ Available</div>
+        </div>
+      </div>
+      <div class="property-card">
+        <div class="property-img">🏡</div>
+        <div class="property-info">
+          <div class="property-name">Lake House</div>
+          <div class="property-status booked">● Booked</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Unified inbox</div>
+        <div class="feature-desc">All messages from Airbnb, VRBO, and direct in one place</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">Automated guest messaging</div>
+        <div class="feature-desc">Check-in instructions, check-out reminders, all automated</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧹</div>
+        <div class="feature-title">Cleaning management</div>
+        <div class="feature-desc">Coordinate cleaners, track turnover status, photo reports</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">Join the waitlist</div>
+      <form action="#">
+        <input type="hidden" name="product" value="hoststack">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="host@yourproperties.com" required>
+          <button type="submit">Notify me when it launches</button>
+        </div>
+      </form>
+      <p class="form-note">Built for hosts with 1–20 properties. No bloat.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['HostStack', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'HostStack' },
+            ],
+            utm_source: 'hoststack',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

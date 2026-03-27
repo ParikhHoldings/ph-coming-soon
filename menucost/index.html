@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuCost — Know your food costs. Protect your margins.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #DC2626;
+    --accent-light: #F87171;
+    --accent-dim: rgba(220,38,38,0.1);
+    --bg: #0D0202;
+    --surface: #180404;
+    --text: #FFF5F5;
+    --muted: #9A6060;
+    --border: rgba(220,38,38,0.15);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Checkerboard subtle texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(220,38,38,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(220,38,38,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-left {
+    position: fixed;
+    bottom: -200px;
+    left: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(220,38,38,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 44px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: pop 0.5s ease both;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    font-size: 1.4rem;
+  }
+
+  .coming-soon {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 6px;
+  }
+
+  main {
+    padding: 80px 0;
+  }
+
+  .headline-section {
+    margin-bottom: 60px;
+    animation: pop 0.5s ease 0.1s both;
+  }
+
+  .kicker {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kicker::after {
+    content: '';
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(3rem, 7.5vw, 6rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    margin-bottom: 24px;
+  }
+
+  h1 .line2 {
+    color: var(--accent-light);
+    display: block;
+  }
+
+  .description {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 500px;
+    font-weight: 300;
+  }
+
+  /* Data dashboard preview */
+  .dashboard-preview {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 56px;
+    animation: pop 0.5s ease 0.2s both;
+  }
+
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .metric-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(220,38,38,0.08);
+  }
+
+  .metric-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    margin-bottom: 4px;
+  }
+
+  .metric-value.good { color: #4ADE80; }
+  .metric-value.warn { color: var(--accent-light); }
+  .metric-value.neutral { color: var(--text); }
+
+  .metric-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* Recipe list preview */
+  .recipe-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 56px;
+    animation: pop 0.5s ease 0.25s both;
+  }
+
+  .recipe-preview-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+  }
+
+  .recipe-row {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(220,38,38,0.07);
+    font-size: 0.88rem;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    transition: background 0.15s;
+  }
+
+  .recipe-row:hover { background: rgba(220,38,38,0.03); }
+  .recipe-row:last-child { border-bottom: none; }
+
+  .recipe-name { font-weight: 500; }
+  .recipe-cost { color: var(--muted); font-size: 0.82rem; }
+  .recipe-margin { font-weight: 700; }
+  .recipe-margin.high { color: #4ADE80; }
+  .recipe-margin.med { color: #FBBF24; }
+  .recipe-margin.low { color: var(--accent-light); }
+
+  .features-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 52px;
+    animation: pop 0.5s ease 0.3s both;
+  }
+
+  .feat-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  .feat-chip-icon { font-size: 1rem; }
+
+  .form-section {
+    animation: pop 0.5s ease 0.35s both;
+  }
+
+  .form-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .form-sub {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover { background: #B91C1C; }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .form-note {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: pop 0.5s ease 0.5s both;
+  }
+
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.97) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .dashboard-preview { grid-template-columns: 1fr 1fr; }
+    .recipe-preview { overflow-x: auto; }
+    .form-row { flex-direction: column; }
+    button[type="submit"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="glow-left"></div>
+<div class="container">
+  <header>
+    <div class="logo">
+      <span class="logo-icon">🍽</span>
+      MenuCost
+    </div>
+    <div class="coming-soon">Coming Soon</div>
+  </header>
+
+  <main>
+    <div class="headline-section">
+      <div class="kicker">For independent restaurants</div>
+      <h1>Know your food costs.<br><span class="line2">Protect your margins.</span></h1>
+      <p class="description">
+        Inventory tracking and recipe costing for independent restaurants. Stop guessing — see exactly where your money goes and which menu items are actually profitable.
+      </p>
+    </div>
+
+    <div class="dashboard-preview">
+      <div class="metric-card">
+        <div class="metric-label">Food Cost %</div>
+        <div class="metric-value good">28.4%</div>
+        <div class="metric-sub">↓ 3.2% vs last month</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Best Margin</div>
+        <div class="metric-value neutral">Pasta Bowl</div>
+        <div class="metric-sub">72% margin · $18 price</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Alert</div>
+        <div class="metric-value warn">3 items</div>
+        <div class="metric-sub">Recipe cost increased &gt;5%</div>
+      </div>
+    </div>
+
+    <div class="recipe-preview">
+      <div class="recipe-preview-header">
+        <span>Menu Item</span>
+        <span>Cost</span>
+        <span>Margin</span>
+      </div>
+      <div class="recipe-row">
+        <span class="recipe-name">Grilled Salmon</span>
+        <span class="recipe-cost">$8.40</span>
+        <span class="recipe-margin high">68%</span>
+      </div>
+      <div class="recipe-row">
+        <span class="recipe-name">Ribeye Steak</span>
+        <span class="recipe-cost">$18.20</span>
+        <span class="recipe-margin med">52%</span>
+      </div>
+      <div class="recipe-row">
+        <span class="recipe-name">Chicken Sandwich</span>
+        <span class="recipe-cost">$3.80</span>
+        <span class="recipe-margin high">76%</span>
+      </div>
+      <div class="recipe-row">
+        <span class="recipe-name">Lobster Bisque</span>
+        <span class="recipe-cost">$9.10</span>
+        <span class="recipe-margin low">38%</span>
+      </div>
+    </div>
+
+    <div class="features-row">
+      <div class="feat-chip"><span class="feat-chip-icon">📋</span> Recipe costing</div>
+      <div class="feat-chip"><span class="feat-chip-icon">📦</span> Inventory tracking</div>
+      <div class="feat-chip"><span class="feat-chip-icon">📊</span> Menu margin analysis</div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-title">Get early access</div>
+      <p class="form-sub">For independent restaurant owners who want to stop flying blind on food costs.</p>
+      <form action="#">
+        <input type="hidden" name="product" value="menucost">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="chef@yourrestaurant.com" required>
+          <button type="submit">Notify me</button>
+        </div>
+      </form>
+      <p class="form-note">No credit card. No spam.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['MenuCost', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'MenuCost' },
+            ],
+            utm_source: 'menucost',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

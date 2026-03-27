@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PoolPro — The business software pool service companies actually use.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #06B6D4;
+    --accent-light: #67E8F9;
+    --accent-dim: rgba(6,182,212,0.1);
+    --bg: #00080C;
+    --surface: #011218;
+    --text: #F0FDFF;
+    --muted: #4A8A9A;
+    --border: rgba(6,182,212,0.15);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Water ripple effect */
+  .water-bg {
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 50% 110%, rgba(6,182,212,0.15) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Animated waves at bottom */
+  .wave-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.08;
+  }
+
+  .wave {
+    position: absolute;
+    bottom: 0;
+    left: -50%;
+    width: 200%;
+    height: 120px;
+    background: var(--accent);
+    border-radius: 40% 40% 0 0;
+    animation: wave 8s ease-in-out infinite;
+  }
+
+  .wave:nth-child(2) {
+    opacity: 0.5;
+    animation: wave 10s ease-in-out infinite reverse;
+    height: 100px;
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: translateX(0) translateY(10px); }
+    50% { transform: translateX(-10%) translateY(-10px); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header {
+    padding: 44px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: drop 0.6s ease both;
+  }
+
+  .logo {
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-drop {
+    width: 28px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: sway 3s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  main {
+    padding: 80px 0;
+  }
+
+  .hero {
+    margin-bottom: 60px;
+  }
+
+  .eyebrow {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 20px;
+    animation: drop 0.6s ease 0.1s both;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    margin-bottom: 22px;
+    animation: drop 0.6s ease 0.15s both;
+  }
+
+  h1 .blue {
+    color: var(--accent-light);
+  }
+
+  .description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 520px;
+    font-weight: 300;
+    animation: drop 0.6s ease 0.2s both;
+  }
+
+  /* Route map mockup */
+  .route-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 48px;
+    animation: drop 0.6s ease 0.25s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .route-header {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .route-date {
+    color: var(--accent-light);
+  }
+
+  .stops {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .stops::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), rgba(6,182,212,0.2));
+  }
+
+  .stop {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    font-size: 0.88rem;
+  }
+
+  .stop-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--accent-light);
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .stop.done .stop-dot {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .stop-info { flex: 1; }
+  .stop-name { font-weight: 600; margin-bottom: 2px; }
+  .stop-detail { font-size: 0.75rem; color: var(--muted); }
+
+  .stop-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .stop-status.done { background: rgba(74,222,128,0.1); color: #4ADE80; }
+  .stop-status.next { background: var(--accent-dim); color: var(--accent-light); }
+  .stop-status.later { color: var(--muted); }
+
+  /* Features */
+  .features {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 52px;
+    animation: drop 0.6s ease 0.3s both;
+  }
+
+  .feat {
+    flex: 1;
+    min-width: 200px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .feat:hover { border-color: var(--accent); }
+
+  .feat-icon { font-size: 1.2rem; margin-bottom: 8px; }
+  .feat-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
+  .feat-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+  .form-section {
+    animation: drop 0.6s ease 0.35s both;
+  }
+
+  .form-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .form-sub {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]::placeholder { color: var(--muted); }
+  input[type="email"]:focus { border-color: var(--accent); }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button[type="submit"]:hover { background: var(--accent-light); }
+  button[type="submit"]:active { transform: scale(0.98); }
+
+  .form-note {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 36px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    animation: drop 0.6s ease 0.5s both;
+  }
+
+  @keyframes drop {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .form-row { flex-direction: column; }
+    button[type="submit"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="water-bg"></div>
+<div class="wave-container">
+  <div class="wave"></div>
+  <div class="wave"></div>
+</div>
+
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-drop"></div>
+      PoolPro
+    </div>
+    <div class="status">Coming Soon</div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <p class="eyebrow">For pool service companies</p>
+      <h1>The software pool<br>companies <span class="blue">actually use.</span></h1>
+      <p class="description">
+        Route management, customer scheduling, and billing for pool service businesses. Built for the field — not a desk.
+      </p>
+    </div>
+
+    <div class="route-preview">
+      <div class="route-header">
+        <span>Today's Route — 8 stops</span>
+        <span class="route-date">Tue, Mar 27</span>
+      </div>
+      <div class="stops">
+        <div class="stop done">
+          <div class="stop-dot">✓</div>
+          <div class="stop-info">
+            <div class="stop-name">Henderson Residence</div>
+            <div class="stop-detail">Weekly clean · pH 7.4 · Cl 2.1</div>
+          </div>
+          <div class="stop-status done">Done</div>
+        </div>
+        <div class="stop done">
+          <div class="stop-dot">✓</div>
+          <div class="stop-info">
+            <div class="stop-name">Riverside Community Pool</div>
+            <div class="stop-detail">Commercial · Filter backwash</div>
+          </div>
+          <div class="stop-status done">Done</div>
+        </div>
+        <div class="stop">
+          <div class="stop-dot">3</div>
+          <div class="stop-info">
+            <div class="stop-name">Martinez Family</div>
+            <div class="stop-detail">Bi-weekly · Chemical top-off</div>
+          </div>
+          <div class="stop-status next">Next →</div>
+        </div>
+        <div class="stop">
+          <div class="stop-dot">4</div>
+          <div class="stop-info">
+            <div class="stop-name">Oak Hills HOA</div>
+            <div class="stop-detail">Weekly · 4:00 PM</div>
+          </div>
+          <div class="stop-status later">Later</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon">🗺</div>
+        <div class="feat-name">Route optimization</div>
+        <div class="feat-desc">Optimized stops, turn-by-turn, less windshield time</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">💳</div>
+        <div class="feat-name">Recurring billing</div>
+        <div class="feat-desc">Auto-invoice, auto-collect, zero chasing</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🧪</div>
+        <div class="feat-name">Chemical logging</div>
+        <div class="feat-desc">Log pH, chlorine, and treatments per stop</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-title">Get on the list</div>
+      <p class="form-sub">Built for pool service owners, not office workers. Be first in line.</p>
+      <form action="#">
+        <input type="hidden" name="product" value="poolpro">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="your@poolcompany.com" required>
+          <button type="submit">Notify me</button>
+        </div>
+      </form>
+      <p class="form-note">No credit card. No spam. Just pool software that works.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 <a href="https://happywp.co/" style="color:inherit;text-decoration:underline;opacity:0.7;">HappyWP</a>. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = form.querySelector('input[type="email"]').value;
+      const nameInput = form.querySelector('input[type="text"]');
+      const name = nameInput ? nameInput.value : '';
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.beehiiv.com/v2/publications/pub_0aa91871-b0db-4985-836e-d530b93727d9/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer OFmGWCBBTL98UcewuqLFH5POf7tYQ3JwNHOOmwe4sA1Z2FT7oFcgnyhXXq26YyVd' },
+          body: JSON.stringify({
+            email: email,
+            reactivate_existing: true,
+            send_welcome_email: true,
+            tags: ['PoolPro', 'waitlist'],
+            custom_fields: [
+              { id: 'fca5d640-2a0a-4bfb-9945-0d98e931232f', value: 'PoolPro' },
+            ],
+            utm_source: 'poolpro',
+            utm_medium: 'waitlist',
+            utm_campaign: 'coming-soon'
+          })
+        });
+        
+        if (res.ok) {
+          btn.textContent = "You're on the list! 🎉";
+          btn.style.background = '#16a34a';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          btn.textContent = 'Try again';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
